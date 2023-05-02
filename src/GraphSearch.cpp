@@ -1,9 +1,9 @@
 //
 // Created by rocky on 2023/4/28.
 //
-#include <iostream>
 #include <algorithm>
-#include <math.h>
+#include <cmath>
+#include <utility>
 #include "GraphSearch.hpp"
 
 
@@ -22,7 +22,7 @@ void GraphSearch::Plan::setMapSize(GraphSearch::Coordinate coordinate_) {
 }
 
 void GraphSearch::Plan::setObstacle(GraphSearch::coordinateSet newObstacle_) {
-    obstacle = newObstacle_;
+    obstacle = std::move(newObstacle_);
 
 }
 
@@ -99,7 +99,7 @@ void GraphSearch::AStar::updateOpenSet() {
         Coordinate newCoordinate(current->coordinate + direction.at(i));
         if (isCollision(newCoordinate) || findNodeInSet(closedSet, newCoordinate))
             continue;
-        uint totalCost = current->g + ((i < 4) ? 10 : 14);
+        double totalCost = current->g + ((i < 4) ? 10 : 14);
 
         Node* successor = findNodeInSet(openSet, newCoordinate);
         if (successor == nullptr)
@@ -132,7 +132,7 @@ void GraphSearch::ThetaStar::updateOpenSet() {
         {
             if (std::find(obstacle.begin(), obstacle.end(), Coordinate({current->coordinate.x, newCoordinate.y}))!=obstacle.end())
                 continue;
-            if (std::find(obstacle.begin(), obstacle.end(), Coordinate({current->coordinate.y, newCoordinate.x}))!=obstacle.end())
+            if (std::find(obstacle.begin(), obstacle.end(), Coordinate({newCoordinate.x, current->coordinate.x}))!=obstacle.end())
                 continue;
         }
 
@@ -143,7 +143,7 @@ void GraphSearch::ThetaStar::updateOpenSet() {
             successor->h = getH(newCoordinate, target);
             successor->g = current->g + ((i < 4)? 10:14);
             openSet.push_back(successor);
-        } else if (current->g + ((i < 4)? 10:14))
+        } else if (current->g + ((i < 4)? 10:14) < successor->g)
         {
             successor->parent = current;
             successor->g = current->g + ((i < 4)? 10:14);
@@ -187,4 +187,35 @@ bool GraphSearch::ThetaStar::lineOfSight(GraphSearch::Coordinate current_, Graph
     }
 
     return true;
+}
+
+void GraphSearch::SafeA::updateOpenSet() {
+    for (uint i = 0; i < 8; ++i) {
+        // around
+        Coordinate newCoordinate(current->coordinate + direction.at(i));
+        if (isCollision(newCoordinate) || findNodeInSet(closedSet, newCoordinate))
+            continue;
+        if(i > 3)
+        {
+            if (std::find(obstacle.begin(), obstacle.end(), Coordinate({current->coordinate.x, newCoordinate.y}))!=obstacle.end())
+                continue;
+            if (std::find(obstacle.begin(), obstacle.end(), Coordinate({current->coordinate.y, newCoordinate.x}))!=obstacle.end())
+                continue;
+        }
+        double totalCost = current->g + ((i < 4) ? 10 : 14);
+
+        Node *successor = findNodeInSet(openSet, newCoordinate);
+        if (successor == nullptr) {
+            successor = new Node(newCoordinate, current);
+            successor->g = totalCost;
+            successor->h = getH(newCoordinate, target);
+            openSet.push_back(successor);
+
+        } else if (totalCost < successor->g) {
+            successor->parent = current;
+            successor->g = totalCost;
+        }
+
+
+    }
 }

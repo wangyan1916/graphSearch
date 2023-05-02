@@ -7,7 +7,7 @@
 #include <vector>
 
 namespace GraphSearch {
-
+// struct
     using uint = unsigned int;
 
     struct Coordinate{
@@ -51,14 +51,14 @@ namespace GraphSearch {
 
     using coordinateSet = std::vector<Coordinate>;
     using nodeSet = std::vector<Node*>;
-
+// base
     class Plan{
     private:
-        Coordinate mapSize;
+        Coordinate mapSize{};
     protected:
-        Coordinate target;
+        Coordinate target{};
         coordinateSet obstacle, direction;
-        Node * current;
+        Node * current{};
         nodeSet openSet, closedSet;
 
         bool isCollision (Coordinate coordinate_);
@@ -73,7 +73,7 @@ namespace GraphSearch {
          coordinateSet getPath(Coordinate start_, Coordinate target_);
 
     };
-
+// AStar
     class AStar: public Plan
     {
     protected:
@@ -81,7 +81,7 @@ namespace GraphSearch {
     public:
 
     };
-
+// ThetaStar
     class ThetaStar: public Plan
     {
     private:
@@ -89,8 +89,15 @@ namespace GraphSearch {
     protected:
         void updateOpenSet() override;
     };
+// SafeA
+    class SafeA : public Plan
+    {
+    private:
+    protected:
+        void updateOpenSet() override;
+    };
 
-};
+}
 
 
 #endif //GRAPHSEARCH_GRAPHSEARCH_HPP
