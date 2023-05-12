@@ -86,6 +86,8 @@ namespace GraphSearch {
     {
     private:
         bool lineOfSight(Coordinate current_, Coordinate target_);
+    public:
+        static bool lineOfSightOpen(Coordinate current_, Coordinate target_, GraphSearch::coordinateSet obstacle_);
     protected:
         void updateOpenSet() override;
     };

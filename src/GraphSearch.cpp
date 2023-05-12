@@ -188,7 +188,35 @@ bool GraphSearch::ThetaStar::lineOfSight(GraphSearch::Coordinate current_, Graph
 
     return true;
 }
+bool GraphSearch::ThetaStar::lineOfSightOpen(GraphSearch::Coordinate current_, GraphSearch::Coordinate target_, GraphSearch::coordinateSet obstacle_)
+{
+    int dx = abs(target_.x - current_.x);
+    int dy = abs(target_.y - current_.y);
+    int x = current_.x;
+    int y = current_.y;
 
+    int x_inc = (target_.x > current_.x) ? 1 : -1;
+    int y_inc = (target_.y > current_.y) ? 1 : -1;
+    int error = dx - dy;
+
+    dx *= 2;
+    dy *= 2;
+
+    while (x != target_.x || y != target_.y)
+    {
+        if (error > 0) {
+            x += x_inc;
+            error -= dy;
+        } else {
+            y += y_inc;
+            error += dx;
+        }
+        if (std::find(obstacle_.begin(), obstacle_.end(), Coordinate({x, y})) != obstacle_.end())
+            return false;
+    }
+
+    return true;
+}
 void GraphSearch::SafeA::updateOpenSet() {
     for (uint i = 0; i < 8; ++i) {
         // around
