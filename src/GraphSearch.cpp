@@ -10,20 +10,15 @@
 GraphSearch::Plan::Plan() {
     direction = {{1, 0}, {0, 1}, {-1, 0}, {0, -1},
                  {1, 1}, {-1, 1}, {-1, -1}, {1, -1}};
-
     obstacle.clear();
-
-
 }
 
 void GraphSearch::Plan::setMapSize(GraphSearch::Coordinate coordinate_) {
     mapSize = coordinate_;
-
 }
 
 void GraphSearch::Plan::setObstacle(GraphSearch::coordinateSet newObstacle_) {
     obstacle = std::move(newObstacle_);
-
 }
 
 bool GraphSearch::Plan::isCollision(GraphSearch::Coordinate coordinate_) {
@@ -246,4 +241,44 @@ void GraphSearch::SafeA::updateOpenSet() {
 
 
     }
+}
+
+void GraphSearch::PlanGrid::setMap(GraphSearch::GridMap *map_) {
+    map = map_;
+    mapSize = map->getMapSize();
+}
+
+bool GraphSearch::PlanGrid::isCollision(GraphSearch::Coordinate coordinate_) {
+    return (coordinate_.x < 0 || coordinate_.x > mapSize.x ||
+            coordinate_.y < 0 || coordinate_.y > mapSize.y ||
+            map->isCollision(coordinate_.x, coordinate_.y));
+}
+
+GraphSearch::PlanGrid::PlanGrid() {
+    direction = {{1, 0}, {0, 1}, {-1, 0}, {0, -1},
+                 {1, 1}, {-1, 1}, {-1, -1}, {1, -1}};
+}
+
+void GraphSearch::AStarGrid::updateOpenSet() {
+    for (uint i = 0; i < 8; ++i) {
+        // around
+
+        Coordinate newCoordinate(current->coordinate + direction.at(i));
+        if (isCollision(newCoordinate) || findNodeInSet(closedSet, newCoordinate))
+            continue;
+        double totalCost = current->g + ((i < 4) ? 10 : 14);
+
+        Node *successor = findNodeInSet(openSet, newCoordinate);
+        if (successor == nullptr) {
+            successor = new Node(newCoordinate, current);
+            successor->g = totalCost;
+            successor->h = getH(newCoordinate, target);
+            openSet.push_back(successor);
+
+        } else if (totalCost < successor->g) {
+            successor->parent = current;
+            successor->g = totalCost;
+        }
+    }
+
 }
