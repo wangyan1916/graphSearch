@@ -22,17 +22,6 @@ int main() {
     plan2.setMapSize(mapSize);
     plan2.setObstacle(obstacle);
     GraphSearch::coordinateSet path2 = plan2.getPath(start, target);
-    // 算法目前存在一点bug（不严重），但是可以用类似下面的程序解决/单下面的也可能有bug，谨慎使用
-    //if (path2.size() > 2) {
-    //    auto it = path2.begin() + 2;
-    //    while (it != path2.end())
-    //    {
-    //        if (GraphSearch::ThetaStar::lineOfSightOpen(*(it-2), *(it), obstacle))
-    //            it = path2.erase(it);
-    //        else
-    //            ++it;
-    //    }
-    //}
     std::cout<<"ThetaStar:"<<std::endl;
     for (auto coor2: path2) {
         std::cout << coor2.x << "," << coor2.y << std::endl;
