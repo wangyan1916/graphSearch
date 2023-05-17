@@ -24,7 +24,7 @@ int main() {
     }
 
     //AStar_Grid
-    auto * gridMap = new GraphSearch::GridMap(arr, mapSize.x, mapSize.y);
+    auto gridMap = new GraphSearch::GridMap(arr, mapSize.x, mapSize.y);
     GraphSearch::AStarGrid plan3;
     plan3.setMap(gridMap);
     GraphSearch::coordinateSet path3 = plan3.getPath(start, target);
@@ -40,6 +40,14 @@ int main() {
     std::cout<<"ThetaStar:"<<std::endl;
     for (auto coor2: path2) {
         std::cout << coor2.x << "," << coor2.y << std::endl;
+    }
+    // Theta Star Grid
+    GraphSearch::ThetaStarGrid plan4;
+    plan4.setMap(gridMap);
+    GraphSearch::coordinateSet path4 = plan4.getPath(start, target);
+    std::cout<<"ThetaStarGrid:"<<std::endl;
+    for (auto coor: path4) {
+        std::cout << coor.x << "," << coor.y << std::endl;
     }
     return 0;
 }

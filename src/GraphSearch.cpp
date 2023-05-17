@@ -259,6 +259,7 @@ GraphSearch::PlanGrid::PlanGrid() {
                  {1, 1}, {-1, 1}, {-1, -1}, {1, -1}};
 }
 
+
 void GraphSearch::AStarGrid::updateOpenSet() {
     for (uint i = 0; i < 8; ++i) {
         // around
@@ -281,4 +282,71 @@ void GraphSearch::AStarGrid::updateOpenSet() {
         }
     }
 
+}
+
+bool GraphSearch::ThetaStarGrid::lineOfSight(GraphSearch::Coordinate current_, GraphSearch::Coordinate target_) {
+    int dx = abs(target_.x - current_.x);
+    int dy = abs(target_.y - current_.y);
+    int x = current_.x;
+    int y = current_.y;
+
+    int x_inc = (target_.x > current_.x) ? 1 : -1;
+    int y_inc = (target_.y > current_.y) ? 1 : -1;
+    int error = dx - dy;
+
+    dx *= 2;
+    dy *= 2;
+
+    while (x != target_.x || y != target_.y)
+    {
+        if (error > 0) {
+            x += x_inc;
+            error -= dy;
+        } else {
+            y += y_inc;
+            error += dx;
+        }
+        if (map->isCollision(x, y))
+            return false;
+    }
+
+    return true;
+}
+
+void GraphSearch::ThetaStarGrid::updateOpenSet() {
+    for (uint i = 0; i < 8; ++i)
+    {
+        Coordinate newCoordinate(current->coordinate + direction.at(i));
+        if (isCollision((newCoordinate)) || findNodeInSet(closedSet, newCoordinate))
+            continue;
+        // 删除对角范围内
+        if(i > 3)
+        {
+            if (map->isCollision(current->coordinate.x, newCoordinate.y))
+                continue;
+            if (map->isCollision(newCoordinate.x, current->coordinate.x))
+                continue;
+        }
+
+        Node* successor = findNodeInSet(openSet, newCoordinate);
+        if (successor == nullptr)
+        {
+            successor = new Node(newCoordinate, current);
+            successor->h = getH(newCoordinate, target);
+            successor->g = current->g + ((i < 4)? 10:14);
+            openSet.push_back(successor);
+        } else if (current->g + ((i < 4)? 10:14) < successor->g)
+        {
+            successor->parent = current;
+            successor->g = current->g + ((i < 4)? 10:14);
+        }
+        // 根据视线确定父节点
+        if (current->coordinate != closedSet.at(0)->coordinate)
+            if(lineOfSight(successor->coordinate, current->parent->coordinate))
+            {
+                successor->g = getH(successor->coordinate, current->parent->coordinate);
+                successor->parent = current->parent;
+            }
+
+    }
 }

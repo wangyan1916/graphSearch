@@ -91,6 +91,9 @@ namespace GraphSearch {
              Coordinate mapSize = {static_cast<int>(map.size()), static_cast<int>(map.at(0).size())};
              return mapSize;
          }
+         std::vector<std::vector<bool>> getMap() {
+             return map;
+         }
 
      private:
          std::vector<std::vector<bool>> map;
@@ -130,6 +133,8 @@ namespace GraphSearch {
     {
     private:
         Coordinate mapSize{};
+        coordinateSet obstacle;
+        void setMapSize(){};
         void setObstacle(coordinateSet newObstacle_) override{ };
     protected:
         GridMap *map;
@@ -157,7 +162,9 @@ namespace GraphSearch {
      protected:
          void updateOpenSet() override;
      };
-// ThetaStar
+    /**
+     * @brief theta*算法的实现
+     */
     class ThetaStar: public Plan
     {
     private:
@@ -166,6 +173,17 @@ namespace GraphSearch {
         static bool lineOfSightOpen(Coordinate current_, Coordinate target_, GraphSearch::coordinateSet obstacle_);
     protected:
         void updateOpenSet() override;
+    };
+    /**
+     * @brief theta*算法的实现-基于栅格图存储的障碍物
+     */
+    class ThetaStarGrid: public PlanGrid
+    {
+    private:
+        bool lineOfSight(Coordinate current_, Coordinate target_);
+    protected:
+        void updateOpenSet() override;
+
     };
 // SafeA
     class SafeA : public Plan
