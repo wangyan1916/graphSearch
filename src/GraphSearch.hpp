@@ -65,7 +65,7 @@ namespace GraphSearch {
      {
          /**
           * @brief 将char[]类型的数据转换为map，char[]中1为true
-          * @param mapList_ unsigned cahr[] 一维向量存储的代价图
+          * @param mapList_ unsigned char[] 一维向量存储的代价图
           * @param x_ 横坐标边界
           * @param y_ 纵坐标边界
           */
